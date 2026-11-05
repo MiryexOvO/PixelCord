@@ -44,4 +44,3 @@ The theme follows Discord light/dark mode. Customize the paired `--pb-accent` an
 Nunito Sans and Noto Sans SC load from Google Fonts; system fonts are used if unavailable. Remove the opening font `@import` for offline-only use.
 
 A separate wallpaper layer uses a stationary image blur. Panels do **not** use live `backdrop-filter`. No blanket `will-change` or GPU-forcing rules are applied. Member expansion still changes layout; actual performance depends on the Discord build and hardware.
-
