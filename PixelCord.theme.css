@@ -1,0 +1,869 @@
+/**
+ * @name PixelCord
+ * @author Miryex
+ * @version 0.9.0
+ * @authorLink https://github.com/MiryexOvO
+ * @source https://github.com/MiryexOvO/PixelCord
+ * @website https://github.com/MiryexOvO/PixelCord
+ * @description Rose Material surfaces, a wallpaper canvas and an expandable avatar-only member rail.
+ */
+
+/* Optional web font; remove this import for an entirely offline theme. */
+@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700&display=swap");
+
+/* PixelCord — original CSS. No remote theme or script dependencies.
+ * Configuration: change the pb tokens below. Accent and on-accent are a pair.
+ * This is a fixed Material-inspired palette, not wallpaper color extraction.
+ */
+:root {
+    /* Replace the whole value with url("https://example.com/wallpaper.jpg").
+     * Use a direct HTTPS image URL. Default: a flat tonal canvas. */
+    --pb-wallpaper: none;
+    --pb-wallpaper-position: center;
+    --pb-panel-opacity: 86%;
+    --pb-wallpaper-blur: 10px; /* Only the wallpaper, not live UI behind panels. */
+    --pb-gap: 12px;
+    --pb-motion-fast: 160ms;
+    --pb-motion-normal: 240ms;
+    --pb-ease: cubic-bezier(0.2, 0, 0, 1);
+    --pb-members-collapsed: 76px;
+    --pb-members-expanded: 248px;
+    /* Material 3 shape scale; CSS px mapped to Android dp roles. */
+    --pb-shape-xs: 4px;
+    --pb-shape-sm: 8px;
+    --pb-shape-md: 12px;
+    --pb-shape-lg: 16px;
+    --pb-shape-xl: 28px;
+    --pb-shape-full: 999px;
+    --pb-radius: var(--pb-shape-xl);
+    --pb-radius-small: var(--pb-shape-lg);
+    --pb-font: "Nunito Sans", "Noto Sans SC", "Microsoft YaHei UI", "Segoe UI", sans-serif;
+    --font-primary: var(--pb-font);
+    --font-display: var(--pb-font);
+    --font-headline: var(--pb-font);
+}
+
+/* Dark is the fallback for custom Discord dark variants. */
+:root, .theme-dark {
+    --pb-canvas: #171414;
+    --pb-base: #171414;
+    --pb-surface: #211d1d;
+    --pb-raised: #2b2626;
+    --pb-high: #373030;
+    --pb-accent: #e9aaa6;
+    --pb-on-accent: #442426;
+    --pb-container: #634043;
+    --pb-on-container: #ffdad6;
+    --pb-text: #f0e4e2;
+    --pb-muted: #d2bebb;
+    --pb-outline: #675957;
+    --pb-link: #f1b9bc;
+}
+
+.theme-light {
+    --pb-canvas: #f5efed;
+    --pb-base: #f5efed;
+    --pb-surface: #fff8f6;
+    --pb-raised: #f0e5e2;
+    --pb-high: #e8dbd7;
+    --pb-accent: #e9aaa6;
+    --pb-on-accent: #442426;
+    --pb-container: #ffdad6;
+    --pb-on-container: #643c3e;
+    --pb-text: #35272c;
+    --pb-muted: #70575f;
+    --pb-outline: #cbb0b6;
+    --pb-link: #904b54;
+}
+
+/* Map both classic and newer Discord surface tokens. */
+:root, .theme-dark, .theme-light {
+    --background-primary: var(--pb-surface);
+    --background-secondary: var(--pb-base);
+    --background-secondary-alt: var(--pb-raised);
+    --background-tertiary: var(--pb-base);
+    --background-floating: var(--pb-raised);
+    --background-accent: var(--pb-high);
+    --background-base-lowest: var(--pb-base);
+    --background-base-lower: var(--pb-base);
+    --background-base-low: var(--pb-surface);
+    --background-surface-high: var(--pb-raised);
+    --background-surface-higher: var(--pb-high);
+    --background-surface-highest: var(--pb-high);
+    --bg-base-primary: var(--pb-surface);
+    --bg-base-secondary: var(--pb-base);
+    --bg-base-tertiary: var(--pb-raised);
+    --modal-background: var(--pb-surface);
+    --modal-footer-background: var(--pb-raised);
+    --channeltextarea-background: var(--pb-raised);
+    --input-background: var(--pb-raised);
+    --chat-background-default: var(--pb-surface);
+    --header-primary: var(--pb-text);
+    --header-secondary: var(--pb-muted);
+    --text-normal: var(--pb-text);
+    --text-primary: var(--pb-text);
+    --text-secondary: var(--pb-muted);
+    --text-muted: var(--pb-muted);
+    --channels-default: var(--pb-muted);
+    --interactive-normal: var(--pb-muted);
+    --interactive-hover: var(--pb-text);
+    --interactive-active: var(--pb-on-container);
+    --interactive-text-default: var(--pb-muted);
+    --interactive-text-hover: var(--pb-text);
+    --interactive-text-active: var(--pb-on-container);
+    --text-link: var(--pb-link);
+    --background-modifier-hover: color-mix(in srgb, var(--pb-accent) 9%, transparent);
+    --background-modifier-active: color-mix(in srgb, var(--pb-accent) 15%, transparent);
+    --background-modifier-selected: var(--pb-container);
+    --background-message-hover: color-mix(in srgb, var(--pb-accent) 5%, transparent);
+    --background-mentioned: color-mix(in srgb, var(--pb-accent) 12%, transparent);
+    --background-mentioned-hover: color-mix(in srgb, var(--pb-accent) 18%, transparent);
+    --info-warning-foreground: var(--pb-accent);
+    --border-subtle: color-mix(in srgb, var(--pb-outline) 55%, transparent);
+    --border-normal: var(--pb-outline);
+    --scrollbar-auto-thumb: var(--pb-outline);
+    --scrollbar-auto-track: transparent;
+    --scrollbar-thin-thumb: var(--pb-outline);
+    --scrollbar-thin-track: transparent;
+    --button-filled-brand-background: var(--pb-accent);
+    --button-filled-brand-background-hover: color-mix(in srgb, var(--pb-accent) 88%, var(--pb-text));
+    --button-filled-brand-text: var(--pb-on-accent);
+    --control-brand-foreground: var(--pb-accent);
+    --checkbox-background-checked: var(--pb-accent);
+    --checkbox-border-checked: var(--pb-accent);
+}
+
+/* Limit structural changes to recognizable Discord components. Hashed class
+ * fragments may need updating after Discord releases; token mappings survive.
+ */
+#app-mount {
+    background: var(--pb-base);
+}
+#app-mount [class^="chat_"] {
+    background: var(--pb-surface);
+    border-radius: var(--pb-radius) 0 0 0;
+    border-top: 1px solid var(--border-subtle);
+    border-left: 1px solid var(--border-subtle);
+}
+#app-mount nav[aria-label] {
+    background-color: var(--pb-base);
+}
+#app-mount :is([class^="channelTextArea_"], [class^="scrollableContainer_"]) {
+    border-radius: var(--pb-radius);
+    background-color: var(--pb-raised);
+}
+#app-mount [class^="channelTextArea_"] {
+    border: 1px solid var(--border-subtle);
+    transition: border-color 160ms ease;
+}
+#app-mount [class^="channelTextArea_"]:focus-within {
+    border-color: var(--pb-accent);
+}
+#app-mount :is([class^="link_"], [class^="interactive_"]) {
+    border-radius: var(--pb-shape-full);
+    transition: background-color 160ms ease, color 160ms ease;
+}
+#app-mount [class^="modeSelected_"] [class^="link_"],
+#app-mount [class^="interactive_"][class*="selected_"] {
+    background-color: var(--pb-container);
+    color: var(--pb-on-container);
+}
+#app-mount [class^="modeSelected_"] :is([class^="name_"], [class^="icon_"]) {
+    color: var(--pb-on-container);
+}
+#app-mount [class^="item_"][role="tab"] {
+    border-radius: var(--pb-shape-full);
+}
+#app-mount :is([class^="root_"][role="dialog"], [class^="menu_"]) {
+    border-radius: var(--pb-radius);
+    border: 1px solid var(--border-subtle);
+    background-color: var(--pb-raised);
+}
+#app-mount [class^="menu_"] [role^="menuitem"] {
+    border-radius: var(--pb-shape-md);
+}
+#app-mount [class^="button_"]:is([class*="lookFilled_"], [class*="lookOutlined_"]) {
+    border-radius: var(--pb-shape-full);
+}
+#app-mount [class^="button_"][class*="colorBrand_"][class*="lookFilled_"] {
+    background-color: var(--pb-accent);
+    color: var(--pb-on-accent);
+}
+#app-mount [class^="button_"][class*="colorBrand_"][class*="lookFilled_"]:hover {
+    background-color: var(--button-filled-brand-background-hover);
+}
+#app-mount :is([class^="input_"], [class^="searchBar_"]) {
+    border-radius: var(--pb-radius-small);
+}
+#app-mount [class^="embedFull_"] {
+    border-radius: var(--pb-radius-small);
+    background-color: var(--pb-raised);
+}
+#app-mount [class^="reaction_"] {
+    border-radius: var(--pb-shape-full);
+}
+#app-mount [class^="reaction_"][class*="reactionMe_"] {
+    background-color: var(--pb-container);
+    border-color: var(--pb-accent);
+}
+#app-mount [class^="mentioned_"]::before {
+    background-color: var(--pb-accent);
+}
+#app-mount [class^="newMessagesBar_"] {
+    border-radius: 0 0 var(--pb-radius-small) var(--pb-radius-small);
+    background-color: var(--pb-container);
+    color: var(--pb-on-container);
+}
+#app-mount :is(button, a, input, textarea, [tabindex="0"]):focus-visible {
+    outline: 2px solid var(--pb-accent);
+    outline-offset: -2px;
+}
+@media (prefers-reduced-motion: reduce) {
+    #app-mount :is([class^="link_"], [class^="interactive_"], [class^="channelTextArea_"]) {
+        transition: none;
+    }
+}
+
+/* 0.2 layout: wallpaper canvas and separate floating surfaces.
+ * Avoid changing app grid tracks, sidebar positioning or scroll heights:
+ * those also control resize handles and the voice/user panel.
+ */
+#app-mount {
+    isolation: isolate;
+    background: var(--pb-canvas) !important;
+    box-shadow: none;
+}
+/* One stationary background surface. UI updates are not inputs to this
+ * filter, unlike backdrop-filter. Do not animate filter/size or promote
+ * every descendant with will-change / translateZ. Actual caching is up to
+ * Chromium and the GPU driver; this does not promise one-time rasterization.
+ */
+#app-mount::before {
+    content: "";
+    position: fixed;
+    inset: -32px;
+    z-index: -1;
+    pointer-events: none;
+    background: var(--pb-wallpaper) var(--pb-wallpaper-position) / cover no-repeat;
+    filter: blur(var(--pb-wallpaper-blur));
+}
+#app-mount :is([class^="bg_"], [class^="app_"], [class^="appAsidePanelWrapper_"], [class^="notAppAsidePanel_"], [class^="base_"], [class^="sidebar_"]) {
+    background: transparent !important;
+}
+#app-mount :is([class*="guilds_"], [class^="sidebarList_"]) {
+    margin: var(--pb-gap) 0 var(--pb-gap) var(--pb-gap);
+    border-radius: var(--pb-radius);
+    background: color-mix(in srgb, var(--pb-base) var(--pb-panel-opacity), transparent) !important;
+    border: 1px solid var(--border-subtle);
+    backdrop-filter: none;
+    overflow: hidden;
+}
+#app-mount :is([class*="guilds_"], [class^="sidebarList_"]) nav {
+    background: transparent;
+}
+#app-mount [class^="sidebarList_"] :is([class^="privateChannels_"], [class^="scroller_"], [class^="container_"]) {
+    background-color: transparent;
+}
+#app-mount :is([class^="chat_"], .container__133bf) {
+    margin: var(--pb-gap);
+    border-radius: var(--pb-radius);
+    border: 1px solid var(--border-subtle);
+    background: color-mix(in srgb, var(--pb-surface) var(--pb-panel-opacity), transparent) !important;
+    backdrop-filter: none;
+    overflow: hidden;
+    box-shadow: none;
+    min-width: 0;
+}
+/* Friends currently uses container__133bf; :has is a fallback when its
+ * hash changes but its immediate child keeps the peopleColumn name. */
+#app-mount [class^="container_"]:has(> [class^="peopleColumn_"]) {
+    margin: var(--pb-gap);
+    border-radius: var(--pb-radius);
+    border: 1px solid var(--border-subtle);
+    background: color-mix(in srgb, var(--pb-surface) var(--pb-panel-opacity), transparent) !important;
+    backdrop-filter: none;
+    overflow: hidden;
+}
+#app-mount :is([class^="chatContent_"], [class^="peopleColumn_"], [class^="peopleList_"], [class^="nowPlayingColumn_"], [class^="members_"], [class^="membersWrap_"]) {
+    background: transparent !important;
+}
+#app-mount :is([class^="chat_"], .container__133bf) > :is([class^="subtitleContainer_"], [class^="container_"][class*="themed_"]) {
+    background: color-mix(in srgb, var(--pb-raised) 65%, transparent) !important;
+    border-bottom: 1px solid var(--border-subtle);
+    box-shadow: none;
+}
+#app-mount [class^="peopleListItem_"] {
+    margin: 8px 16px;
+    padding: 16px;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--pb-shape-md);
+    background: color-mix(in srgb, var(--pb-raised) 72%, transparent);
+}
+#app-mount [class^="peopleListItem_"]:hover {
+    background: var(--pb-high);
+}
+#app-mount [class^="nowPlayingColumn_"] {
+    border-left: 1px solid var(--border-subtle);
+}
+#app-mount [class^="nowPlayingColumn_"] [class^="scroller_"] {
+    background: transparent;
+    border: 0;
+}
+#app-mount [class^="nowPlayingColumn_"] :is([class^="itemCard_"], [class^="body_"]) {
+    border-radius: var(--pb-shape-xl);
+    background: var(--pb-raised);
+}
+#app-mount [class^="panels_"] {
+    border-radius: var(--pb-shape-xl);
+    border: 1px solid var(--border-subtle);
+    background: color-mix(in srgb, var(--pb-raised) 95%, transparent) !important;
+    backdrop-filter: none;
+}
+/* Private-channel search is a header containing a button, while toolbar
+ * search is an editable field. Do not style both as nested search pills. */
+#app-mount [class*="privateChannels_"] [class*="searchBar_"] {
+    margin: 0;
+    padding: 10px 12px;
+    height: 56px;
+    min-height: 56px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+#app-mount [class*="privateChannels_"] [class*="searchBarComponent_"] {
+    width: 100%;
+    height: 36px;
+    min-height: 36px;
+    padding: 0 16px;
+    box-sizing: border-box;
+    border: 0;
+    border-radius: var(--pb-shape-full);
+    background: var(--pb-raised);
+    color: var(--pb-muted);
+    font-family: var(--pb-font);
+    font-size: 14px;
+    font-weight: 500;
+    text-align: start;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+#app-mount [class*="search_"] [class*="searchBar_"] {
+    margin: 0;
+    height: 36px;
+    min-height: 36px;
+    width: 220px;
+    max-width: 100%;
+    padding: 0 12px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 0;
+    border-radius: var(--pb-shape-full);
+    background: var(--pb-raised);
+    box-shadow: none;
+}
+#app-mount [class*="search_"] [class*="searchBar_"] .DraftEditor-root {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+#app-mount [class*="search_"] [class*="searchBar_"] .public-DraftEditorPlaceholder-root {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--pb-muted);
+}
+#app-mount [class*="search_"] [class*="searchBar_"] [class*="iconContainer_"] {
+    flex: 0 0 20px;
+    width: 20px;
+    height: 20px;
+}
+#app-mount [class^="channel_"] [class^="interactive_"] {
+    min-height: 46px;
+    padding-inline: 14px;
+}
+#app-mount [class^="modeSelected_"] [class^="link_"],
+#app-mount [class^="interactive_"][class*="selected_"] {
+    background: var(--pb-accent) !important;
+    color: var(--pb-on-accent) !important;
+}
+#app-mount [class^="modeSelected_"] :is([class^="name_"], [class^="icon_"]),
+#app-mount [class^="interactive_"][class*="selected_"] :is([class^="name_"], [class^="linkButtonIcon_"]) {
+    color: var(--pb-on-accent) !important;
+}
+#app-mount [class^="tabBar_"] [role="tab"][aria-selected="true"] {
+    background: var(--pb-container);
+    color: var(--pb-on-container);
+    border-radius: var(--pb-shape-full);
+}
+#app-mount [class^="tabBar_"] [class*="addFriend_"] {
+    background: var(--pb-accent) !important;
+    color: var(--pb-on-accent) !important;
+    border-radius: var(--pb-shape-full);
+    padding: 8px 18px;
+}
+/* Current Discord brand tokens; preserve success/danger and role colors. */
+:root, .theme-dark, .theme-light {
+    --brand-500: var(--pb-accent);
+    --brand-560: #d49390;
+    --brand-600: #bd7f7c;
+    --text-brand: var(--pb-accent);
+    --background-brand: var(--pb-accent);
+    --background-brand-hover: #d49390;
+    --button-positive-background: var(--pb-accent);
+    --button-positive-text: var(--pb-on-accent);
+    --button-filled-brand-border: transparent;
+}
+@media (max-width: 1000px) {
+    :root { --pb-gap: 6px; }
+    #app-mount [class^="peopleListItem_"] { margin-inline: 8px; padding: 12px; }
+}
+
+/* Avatar rail — independently implemented, no Chillax imports.
+ * Keep rows at their native height for Discord's virtualized list.
+ * Clip names visually instead of removing accessible member labels.
+ */
+#app-mount [class^="membersWrap_"] {
+    width: var(--pb-members-collapsed) !important;
+    min-width: var(--pb-members-collapsed) !important;
+    max-width: var(--pb-members-expanded);
+    flex: 0 0 auto;
+    overflow: hidden;
+    border-left: 1px solid var(--border-subtle);
+    transition: width 220ms ease, min-width 220ms ease;
+}
+/* Some client builds give the member rail a separate fixed-width parent. */
+#app-mount [class^="container_"]:has(> [class^="membersWrap_"]) {
+    width: auto !important;
+    min-width: 0 !important;
+    flex: 0 0 auto;
+    background: transparent;
+}
+#app-mount [class^="membersWrap_"]:is(:hover, :focus-within) {
+    width: var(--pb-members-expanded) !important;
+    min-width: var(--pb-members-expanded) !important;
+}
+#app-mount [class^="membersWrap_"] [class^="members_"] {
+    width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: hidden;
+    scrollbar-width: none;
+}
+#app-mount [class^="membersWrap_"] [class^="member_"] {
+    margin-inline: 6px;
+    width: calc(var(--pb-members-expanded) - 14px);
+    max-width: none;
+    border-radius: var(--pb-shape-full);
+}
+#app-mount [class^="membersWrap_"] [class^="memberInner_"] {
+    min-width: 0;
+    padding-inline: 10px;
+    border-radius: inherit;
+}
+#app-mount [class^="membersWrap_"] [class^="avatar_"] {
+    flex-shrink: 0;
+}
+#app-mount [class^="membersWrap_"] [class^="content_"] {
+    /* This wrapper can contain the avatar as well as the name. */
+    opacity: 1;
+    white-space: nowrap;
+}
+#app-mount [class^="membersWrap_"] :is([class^="nameAndDecorators_"], [class^="subText_"]) {
+    opacity: 0;
+    transition: opacity 160ms ease;
+}
+#app-mount [class^="membersWrap_"]:is(:hover, :focus-within) :is([class^="nameAndDecorators_"], [class^="subText_"]) {
+    opacity: 1;
+}
+#app-mount [class^="membersWrap_"] [class^="membersGroup_"] {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: clip;
+    padding-inline: 14px;
+    color: var(--pb-muted);
+}
+#app-mount [class^="membersWrap_"]:not(:hover):not(:focus-within) [class^="membersGroup_"] {
+    /* Keep group height so virtual scrolling stays aligned. */
+    color: transparent;
+    position: relative;
+}
+#app-mount [class^="membersWrap_"]:not(:hover):not(:focus-within) [class^="membersGroup_"]::after {
+    content: "";
+    position: absolute;
+    bottom: 7px;
+    left: 22px;
+    width: 24px;
+    height: 2px;
+    border-radius: var(--pb-shape-full);
+    background: var(--pb-outline);
+}
+/* No additional blur on the avatar rail: it shares the main glass panel. */
+@media (prefers-reduced-motion: reduce) {
+    #app-mount [class^="membersWrap_"],
+    #app-mount [class^="membersWrap_"] :is([class^="nameAndDecorators_"], [class^="subText_"]) {
+        transition: none;
+    }
+}
+@media (hover: none) {
+    #app-mount [class^="membersWrap_"] {
+        width: var(--pb-members-expanded) !important;
+        min-width: var(--pb-members-expanded) !important;
+    }
+    #app-mount [class^="membersWrap_"] :is([class^="nameAndDecorators_"], [class^="subText_"]) { opacity: 1; }
+    #app-mount [class^="membersWrap_"]:not(:hover):not(:focus-within) [class^="membersGroup_"] { color: var(--pb-muted); }
+    #app-mount [class^="membersWrap_"] [class^="membersGroup_"]::after { display: none; }
+}
+
+/* Cover Chromium's legacy scrollbar styling as well as standard styling.
+ * Scrolling itself remains enabled, including wheel and keyboard controls. */
+#app-mount [class^="membersWrap_"] [class^="members_"]::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+#app-mount [class^="membersWrap_"]:not(:hover):not(:focus-within) [class^="member_"] {
+    background: transparent;
+}
+/* The guild rail usually has wrapper_* FIRST and guilds_* SECOND. */
+#app-mount [class*="guilds_"] :is([class^="scroller_"], [class^="tree_"]) {
+    background: transparent !important;
+}
+#app-mount [class*="guilds_"] {
+    align-self: stretch;
+    border-radius: var(--pb-radius);
+    padding-top: 8px;
+    box-sizing: border-box;
+}
+
+/* Reading surfaces: normal user and bot message bodies only.
+ * Replies, usernames, attachments and embedded cards retain their layout.
+ * Keep code fonts and Discord's spoiler/mention interaction intact. */
+#app-mount [class*="messageContent_"] {
+    font-family: var(--pb-font);
+    line-height: 1.55;
+}
+#app-mount [class^="contents_"] > [class*="messageContent_"]:not(:empty) {
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 10px 14px;
+    /* Discord uses a negative left margin plus compensating padding here.
+     * Reset both sides together so a bubble stays in the text column. */
+    margin-inline: 0;
+    text-indent: 0;
+    margin-top: 5px;
+    border-radius: var(--pb-shape-xs) var(--pb-shape-lg) var(--pb-shape-lg);
+    border: 1px solid var(--border-subtle);
+    background: color-mix(in srgb, var(--pb-raised) 78%, transparent);
+}
+#app-mount [class^="contents_"] > [class*="messageContent_"]:has(> [class*="emojiContainer_"]:only-child) {
+    padding: 6px 10px;
+    background: transparent;
+    border-color: transparent;
+}
+
+/* Selected text/voice channels: inset rose indicator and a quiet surface.
+ * modeSelected_* may appear after containerDefault_* in the class list. */
+#app-mount [class*="modeSelected_"] [class^="link_"] {
+    position: relative;
+    border-radius: var(--pb-shape-md);
+    padding-inline-start: 16px;
+    background: color-mix(in srgb, var(--pb-accent) 14%, var(--pb-raised)) !important;
+    color: var(--pb-text) !important;
+}
+#app-mount [class*="modeSelected_"] [class^="link_"]::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    border-radius: var(--pb-shape-full);
+    background: var(--pb-accent);
+    pointer-events: none;
+}
+#app-mount [class*="modeSelected_"] :is([class^="name_"], [class^="icon_"]) {
+    color: var(--pb-text);
+}
+#app-mount [class*="modeSelected_"] [class^="unread_"] {
+    display: none;
+}
+
+/* Component shape roles: menus XS, cards M, dialogs XL, search Full. */
+#app-mount [class^="menu_"][class] {
+    border-radius: var(--pb-shape-xs);
+}
+#app-mount [class^="menu_"] [role^="menuitem"] {
+    border-radius: var(--pb-shape-xs);
+}
+#app-mount :is([class^="peopleListItem_"], [class^="embedFull_"]) {
+    border-radius: var(--pb-shape-md);
+}
+#app-mount [class^="nowPlayingColumn_"] :is([class^="itemCard_"], [class^="body_"]) {
+    border-radius: var(--pb-shape-md);
+}
+#app-mount [class^="input_"] { border-radius: var(--pb-shape-xs); }
+#app-mount [class^="searchBar_"] { border-radius: var(--pb-shape-full); }
+
+/* Pixel-style horizontal sliders. Keep the native percentage-based inline
+ * width/left and event handlers: no generated values or replacement controls.
+ * Only touch Discord's bar/track/grabber structure, never chat scrollbars.
+ */
+#app-mount [class*="slider_"]:has([class*="grabber_"]) {
+    height: 44px;
+    min-height: 44px;
+}
+#app-mount [class*="slider_"] [class*="bar_"] {
+    top: 10px;
+    height: 24px;
+    border-radius: var(--pb-shape-sm);
+    background: var(--pb-high);
+    overflow: hidden;
+}
+#app-mount [class*="slider_"] [class*="barFill_"] {
+    height: 100%;
+    border-radius: var(--pb-shape-sm) var(--pb-shape-xs) var(--pb-shape-xs) var(--pb-shape-sm);
+    background: var(--pb-accent);
+}
+#app-mount [class*="slider_"] [class*="track_"] {
+    top: 0;
+    height: 44px;
+}
+#app-mount [class*="slider_"] [class*="grabber_"] {
+    top: 50%;
+    width: 4px;
+    height: 36px;
+    margin-top: -18px;
+    margin-left: -2px;
+    border: none;
+    border-radius: 2px;
+    background: var(--pb-accent);
+    /* Retain the original surface-colored gap; remove only the focus ring. */
+    box-shadow: 0 0 0 4px var(--pb-raised);
+    outline: none;
+}
+#app-mount [class*="slider_"]:has([class*="grabber_"]:focus-visible) [class*="bar_"] {
+    /* Keyboard focus goes around the track, never around the thin handle. */
+    outline: 2px solid var(--pb-accent);
+    outline-offset: 4px;
+}
+#app-mount [class*="slider_"]:is([aria-disabled="true"], [class*="disabled_"]) {
+    opacity: 0.38;
+}
+
+/* Native Discord switch SVG already supplies its checked/unchecked icon.
+ * Exclude sliders above: a switch is a container with a direct slider SVG.
+ * Preserve the original input for keyboard and pointer interaction.
+ */
+#app-mount [class*="container_"]:has(> svg[class*="slider_"]) {
+    width: 52px;
+    min-width: 52px;
+    height: 32px;
+    border-radius: var(--pb-shape-full);
+    box-sizing: border-box;
+    border: 2px solid var(--pb-outline);
+    background: var(--pb-high) !important;
+}
+#app-mount [class*="container_"][class*="checked_"]:has(> svg[class*="slider_"]) {
+    border-color: var(--pb-accent);
+    background: var(--pb-accent) !important;
+}
+#app-mount [class*="container_"] > svg[class*="slider_"] {
+    width: 28px;
+    height: 28px;
+    top: 0;
+    left: 0;
+    transform: translateX(0) !important;
+    overflow: visible;
+    transition: transform 180ms ease;
+    pointer-events: none;
+}
+#app-mount [class*="container_"][class*="checked_"] > svg[class*="slider_"] {
+    transform: translateX(20px) !important;
+}
+#app-mount [class*="container_"] > svg[class*="slider_"] rect { fill: var(--pb-muted); }
+#app-mount [class*="container_"][class*="checked_"] > svg[class*="slider_"] rect { fill: var(--pb-on-accent); }
+#app-mount [class*="container_"] > svg[class*="slider_"] path { fill: var(--pb-base); }
+#app-mount [class*="container_"][class*="checked_"] > svg[class*="slider_"] path { fill: var(--pb-accent); }
+@media (prefers-reduced-motion: reduce) {
+    #app-mount [class*="container_"] > svg[class*="slider_"] { transition: none; }
+}
+
+/* Stable channel geometry: animate paint and the indicator, not padding. */
+#app-mount [class*="containerDefault_"] [class^="link_"] {
+    position: relative;
+    padding-inline-start: 16px;
+    border-radius: var(--pb-shape-md);
+    transition: background-color var(--pb-motion-fast) var(--pb-ease), color var(--pb-motion-fast) var(--pb-ease);
+}
+#app-mount [class*="containerDefault_"] [class^="link_"]::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 5px;
+    top: 50%;
+    width: 3px;
+    height: 20px;
+    border-radius: var(--pb-shape-full);
+    background: var(--pb-accent);
+    opacity: 0;
+    transform: translateY(-50%) scaleY(0.35);
+    transition: opacity var(--pb-motion-fast) var(--pb-ease), transform var(--pb-motion-normal) var(--pb-ease);
+    pointer-events: none;
+}
+#app-mount [class*="modeSelected_"] [class^="link_"]::before {
+    opacity: 1;
+    transform: translateY(-50%) scaleY(1);
+}
+#app-mount [class^="interactive_"] {
+    transition: background-color var(--pb-motion-fast) var(--pb-ease), color var(--pb-motion-fast) var(--pb-ease);
+}
+#app-mount [class^="tabBar_"] [role="tab"] {
+    transition: background-color var(--pb-motion-fast) var(--pb-ease), color var(--pb-motion-fast) var(--pb-ease);
+}
+
+/* Keep Discord's unread/selected state and pill height animation. Move its
+ * visible portion inwards so the rounded server rail cannot clip it. */
+#app-mount [class*="guilds_"] [class*="pill_"] {
+    left: 8px;
+    top: 0;
+    width: 3px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    overflow: visible;
+}
+#app-mount [class*="guilds_"] [class*="pill_"] [class*="item_"] {
+    width: 3px !important;
+    margin: 0 !important;
+    max-height: 20px;
+    border-radius: var(--pb-shape-full);
+    background: var(--pb-accent) !important;
+    transform: none !important;
+    /* Discord drives pill height itself; do not interpolate each native update. */
+    transition: background-color var(--pb-motion-fast) var(--pb-ease);
+}
+#app-mount [class*="guilds_"] [class*="listItemWrapper_"] {
+    transition: scale var(--pb-motion-fast) var(--pb-ease);
+    transform-origin: center;
+}
+#app-mount [class*="guilds_"] [class*="listItemWrapper_"]:hover { scale: 1.04; }
+#app-mount [class*="guilds_"] [class*="listItemWrapper_"]:active { scale: 0.96; }
+#app-mount [class*="guilds_"] :is([class^="icon_"], [class^="childWrapper_"]) {
+    border-radius: var(--pb-shape-lg);
+    transition: background-color var(--pb-motion-fast) var(--pb-ease);
+}
+#app-mount [class*="guilds_"] [class*="numberBadge_"] {
+    min-width: 16px;
+    height: 16px;
+    padding-inline: 4px;
+    box-sizing: border-box;
+    border-radius: var(--pb-shape-full);
+    background: var(--pb-accent) !important;
+    color: var(--pb-on-accent) !important;
+    box-shadow: 0 0 0 2px var(--pb-base);
+    font-size: 11px;
+    line-height: 16px;
+    font-weight: 800;
+    transition: background-color var(--pb-motion-fast) var(--pb-ease);
+}
+
+/* Performance: no mount animations on the virtualized message viewport,
+ * no per-keystroke :has() rules on the Slate composer, and no message fade
+ * competing with Discord's own sending state. Focus still changes the border.
+ */
+@media (prefers-reduced-motion: reduce) {
+    #app-mount :is([class*="containerDefault_"] [class^="link_"], [class^="interactive_"], [class^="tabBar_"] [role="tab"], [class^="channelTextArea_"], [class*="guilds_"] [class*="listItemWrapper_"], [class*="guilds_"] [class*="numberBadge_"], [class*="guilds_"] [class*="pill_"] [class*="item_"], [class*="guilds_"] [class^="icon_"], [class*="guilds_"] [class^="childWrapper_"]) { transition: none; }
+    #app-mount [class*="containerDefault_"] [class^="link_"]::before { transition: none; }
+    #app-mount [class*="guilds_"] [class*="listItemWrapper_"]:is(:hover, :active) { scale: 1; }
+    #app-mount :is([class^="channelTextArea_"], [class^="chatContent_"] [class^="scrollerInner_"], [class*="messageContent_"]) { animation: none !important; }
+}
+
+/* Hide only the native server-rail unread/selection pill. Channel indicators,
+ * server notification counts, and voice status badges remain available.
+ * Some builds put the pill inside a generic wrapper; the item is shared
+ * with pill widgets and has varied between releases.
+ */
+#app-mount [class*="guilds_"] [class*="pill_"] {
+    display: none !important;
+}
+/* Current native pill item module; scoped to the server rail, never channels. */
+#app-mount [class*="guilds_"] .item__58105 {
+    display: none !important;
+}
+
+/* Member list: quiet rows, not a stack of dark pills. Preserve native row
+ * heights and group spacing because the list is virtualized by Discord. */
+#app-mount [class^="membersWrap_"] [class*="member_"] {
+    border-radius: var(--pb-shape-md);
+    background: transparent !important;
+}
+#app-mount [class^="membersWrap_"] [class*="member_"] :is([class*="memberInner_"], [class*="childContainer_"], [class*="layout_"]) {
+    background: transparent !important;
+    border-radius: inherit;
+}
+#app-mount [class^="membersWrap_"] [class*="member_"] [class*="container_"] {
+    background-color: transparent !important;
+}
+#app-mount [class^="membersWrap_"] [class*="member_"]:is(:hover, :focus-within) {
+    background: color-mix(in srgb, var(--pb-accent) 10%, transparent) !important;
+}
+#app-mount [class^="membersWrap_"] [class*="member_"][class*="selected_"] {
+    background: color-mix(in srgb, var(--pb-accent) 16%, transparent) !important;
+}
+#app-mount [class^="membersWrap_"] [class*="nameAndDecorators_"] {
+    min-width: 0;
+    font-size: 14px;
+    line-height: 20px;
+}
+#app-mount [class^="membersWrap_"] [class*="subText_"] {
+    font-size: 11px;
+    line-height: 14px;
+    color: var(--pb-muted);
+}
+#app-mount [class^="membersWrap_"] [class*="membersGroup_"] {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    text-transform: none;
+    text-overflow: ellipsis;
+}
+#app-mount [class^="membersWrap_"] [class*="member_"][class*="offline_"] { opacity: 0.7; }
+
+/* Status rings follow native SVG status masks. Unknown DOM/statuses retain
+ * their native indicator: never hide a dot without a recognized ring.
+ * Scoped to server members; messages and private-channel avatars are intact.
+ */
+:root {
+    --pb-status-online: #5dc995;
+    --pb-status-idle: #e9c46a;
+    --pb-status-dnd: #ef8e91;
+    --pb-status-offline: #9a9093;
+    --pb-status-streaming: #bb9aee;
+}
+#app-mount [class^="membersWrap_"] [class*="wrapper_"]:has(> svg[class*="mask_"] rect[mask*="status-online"]) { --pb-member-status: var(--pb-status-online); }
+#app-mount [class^="membersWrap_"] [class*="wrapper_"]:has(> svg[class*="mask_"] rect[mask*="status-idle"]) { --pb-member-status: var(--pb-status-idle); }
+#app-mount [class^="membersWrap_"] [class*="wrapper_"]:has(> svg[class*="mask_"] rect[mask*="status-dnd"]) { --pb-member-status: var(--pb-status-dnd); }
+#app-mount [class^="membersWrap_"] [class*="wrapper_"]:has(> svg[class*="mask_"] rect[mask*="status-offline"]) { --pb-member-status: var(--pb-status-offline); }
+#app-mount [class^="membersWrap_"] [class*="wrapper_"]:has(> svg[class*="mask_"] rect[mask*="status-streaming"]) { --pb-member-status: var(--pb-status-streaming); }
+#app-mount [class^="membersWrap_"] [class*="wrapper_"]:has(> svg[class*="mask_"] rect:is([mask*="status-online"], [mask*="status-idle"], [mask*="status-dnd"], [mask*="status-offline"], [mask*="status-streaming"])) {
+    border-radius: 50%;
+    outline: 2px solid var(--pb-member-status);
+    outline-offset: 2px;
+}
+#app-mount [class^="membersWrap_"] [class*="wrapper_"]:has(> svg[class*="mask_"] rect:is([mask*="status-online"], [mask*="status-idle"], [mask*="status-dnd"], [mask*="status-offline"], [mask*="status-streaming"])) > svg[class*="mask_"] foreignObject {
+    mask: none;
+    clip-path: circle(50%);
+    border-radius: 50%;
+    overflow: hidden;
+}
+#app-mount [class^="membersWrap_"] [class*="wrapper_"] > svg[class*="mask_"] rect:is([mask*="status-online"], [mask*="status-idle"], [mask*="status-dnd"], [mask*="status-offline"], [mask*="status-streaming"]) {
+    opacity: 0;
+}
